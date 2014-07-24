@@ -2,8 +2,10 @@ superagent = require 'superagent'
 expect = require 'expect.js'
 
 describe 'stutz survey api', ->
+  @timeout 1000
+  id = null
   it 'post object', (done) ->
-    superagent.post 'http://localhost:3000/surveys/test' 
+    superagent.post 'http://localhost:3000/collections/surveys' 
       .send 
         name: 'Stutz'
         email: 'stutz@stutzsolucoes.com.br'
@@ -20,7 +22,7 @@ describe 'stutz survey api', ->
         done()
 
   it 'retrieves an object', (done) ->
-    superagent.get 'http://localhost:3000/surveys/test/'+id 
+    superagent.get 'http://localhost:3000/collections/surveys/'+id 
       .end (e, res) ->
         #console.log(res.body)
         expect e 
@@ -34,7 +36,7 @@ describe 'stutz survey api', ->
         done()
       
   it 'retrieves a collection', (done) ->
-    superagent.get 'http://localhost:3000/surveys/test'
+    superagent.get 'http://localhost:3000/collections/surveys'
       .end (e, res) ->
         #console.log(res.body)
         expect e
@@ -47,7 +49,7 @@ describe 'stutz survey api', ->
         done()
 
   it 'updates an object', (done) ->
-    superagent.put 'http://localhost:3000/surveys/test/'+id
+    superagent.put 'http://localhost:3000/collections/surveys/'+id
       .send
         name: 'New Stutz'
         email: 'new@stutzsolucoes.com.br'
@@ -61,7 +63,7 @@ describe 'stutz survey api', ->
         done()
 
   it 'checks an updated object', (done) ->
-    superagent.get 'http://localhost:3000/surveys/test/'+id 
+    superagent.get 'http://localhost:3000/collections/surveys/'+id 
       .end (e,res) ->
         expect e 
           .to.eql null
@@ -72,10 +74,11 @@ describe 'stutz survey api', ->
         expect res.body._id
           .to.eql id         
         expect res.body.name
-          .to.eql 'New Stutz'         
+          .to.eql 'New Stutz'
+        done()         
 
   it 'removes an object', (done) ->
-    superagent.del 'http://localhost:3000/surveys/test/'
+    superagent.del 'http://localhost:3000/collections/surveys/' + id
       .end (e,res) ->
         expect e 
           .to.eql null

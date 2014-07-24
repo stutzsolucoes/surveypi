@@ -12,7 +12,7 @@ app.param 'collectionName', (req, res, next, collectionName) ->
   next()
 
 app.get '/', (req, res) ->
-	rest.send 'invalid collection'
+	res.send 'invalid collection'
 
 app.get '/collections/:collectionName', (req, res, next) ->
 	req.collection.find {}, 
@@ -33,9 +33,7 @@ app.get '/collections/:collectionName/:id', (req, res, next) ->
 
 app.put '/collections/:collectionName/:id', (req, res, next) ->
 	req.collection.updateById req.params.id, 
-		$set : req.body, 
-		safe : true
-		multi : false,
+		$set : req.body,
 		(e, result) ->
 			return next e if e
 			res.send( if result is 1 then msg : 'success' else  msg : 'error')
@@ -47,3 +45,5 @@ app.del '/collections/:collectionName/:id', (req, res, next) ->
 			res.send( if result is 1 then msg : 'success' else  msg : 'error')
 
 app.listen 3000
+
+console.log 'Listening on 3000'

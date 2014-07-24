@@ -22,7 +22,7 @@
   });
 
   app.get('/', function(req, res) {
-    return rest.send('invalid collection');
+    return res.send('invalid collection');
   });
 
   app.get('/collections/:collectionName', function(req, res, next) {
@@ -57,9 +57,7 @@
 
   app.put('/collections/:collectionName/:id', function(req, res, next) {
     return req.collection.updateById(req.params.id, {
-      $set: req.body,
-      safe: true,
-      multi: false
+      $set: req.body
     }, function(e, result) {
       if (e) {
         return next(e);
@@ -86,5 +84,7 @@
   });
 
   app.listen(3000);
+
+  console.log('Listening on 3000');
 
 }).call(this);

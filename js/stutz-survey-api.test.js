@@ -7,12 +7,14 @@
   expect = require('expect.js');
 
   describe('stutz survey api', function() {
+    var id;
+    this.timeout(1000);
+    id = null;
     it('post object', function(done) {
-      return superagent.post('http://localhost:3000/surveys/test').send({
+      return superagent.post('http://localhost:3000/collections/surveys').send({
         name: 'Stutz',
         email: 'stutz@stutzsolucoes.com.br'
       }).end(function(e, res) {
-        var id;
         expect(e).to.eql(null);
         expect(res.body.length).to.eql(1);
         expect(res.body[0]._id.length).to.eql(24);
@@ -21,7 +23,7 @@
       });
     });
     it('retrieves an object', function(done) {
-      return superagent.get('http://localhost:3000/surveys/test/' + id).end(function(e, res) {
+      return superagent.get('http://localhost:3000/collections/surveys/' + id).end(function(e, res) {
         expect(e).to.eql(null);
         expect(typeof res.body).to.eql('object');
         expect(res.body._id.length).to.eql(24);
@@ -30,7 +32,7 @@
       });
     });
     it('retrieves a collection', function(done) {
-      superagent.get('http://localhost:3000/surveys/test').end(function(e, res) {
+      superagent.get('http://localhost:3000/collections/surveys').end(function(e, res) {
         expect(e).to.eql(null);
         expect(res.body.length).to.be.above(0);
         return expect(res.body.map(function(item) {
@@ -40,7 +42,7 @@
       return done();
     });
     it('updates an object', function(done) {
-      return superagent.put('http://localhost:3000/surveys/test/' + id).send({
+      return superagent.put('http://localhost:3000/collections/surveys/' + id).send({
         name: 'New Stutz',
         email: 'new@stutzsolucoes.com.br'
       }).end(function(e, res) {
@@ -51,16 +53,17 @@
       });
     });
     it('checks an updated object', function(done) {
-      return superagent.get('http://localhost:3000/surveys/test/' + id).end(function(e, res) {
+      return superagent.get('http://localhost:3000/collections/surveys/' + id).end(function(e, res) {
         expect(e).to.eql(null);
         expect(typeof res.body).to.eql('object');
         expect(res.body._id.length).to.eql(24);
         expect(res.body._id).to.eql(id);
-        return expect(res.body.name).to.eql('New Stutz');
+        expect(res.body.name).to.eql('New Stutz');
+        return done();
       });
     });
     return it('removes an object', function(done) {
-      return superagent.del('http://localhost:3000/surveys/test/').end(function(e, res) {
+      return superagent.del('http://localhost:3000/collections/surveys/' + id).end(function(e, res) {
         expect(e).to.eql(null);
         expect(typeof res.body).to.eql('object');
         expect(res.body.msg).to.eql('success');
