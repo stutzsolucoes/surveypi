@@ -1,48 +1,107 @@
-express = require('express')
-mongoskin = require('mongoskin')
-bodyParser = require('body-parser')
+express = require 'express' 
+mongoskin = require 'mongoskin'
+bodyParser = require 'body-parser'
+superagent = require 'superagent'
+async = require 'async'
 
 app = express()
 app.use bodyParser()
 
-db = mongoskin.db 'mongodb://@localhost:27017/stutz_survey_api',  safe : true 
+#db = mongoskin.db 'mongodb://stutz:Str4igh0Thr0ugh@200.150.207.77:27017/stutz_survey_api',  safe : true 
+db = mongoskin.db 'mongodb://localhost:27017/stutz_survey_api',  safe : true 
 
 app.param 'collectionName', (req, res, next, collectionName) ->
   req.collection = db.collection collectionName
   next()
+  #check the credentials
+  #res.status 500
+  #next(new Error('invalid credentials'));
+
+##
+# begin of Survey API specific services
+##
+getQuestions = (questionIds, questionsRetrieved) ->
+	async.map questionIds, (questionId, callback) ->
+		superagent.get 'http://localhost:3000/survey_question/'+questionId 
+		.end (e, res) ->
+			return callback(e,null) if e isnt null
+			callback(null, res.body)
+	,
+	(err, results) ->
+		questionsRetrieved(results)
+
+
+app.get '/opened_survey/:id', (req, resGet, next) ->
+	superagent.get 'http://localhost:3000/survey/'+req.params.id 
+		.end (e, res) ->
+			survey = res.body
+			questionIds = survey.questions
+			survey.questions = []
+			getQuestions questionIds, (questionsReceived) ->
+				survey.questions = questionsReceived
+				resGet.send(survey)
+
+ 
+##
+# end of Survey API specific services
+##
+
 
 app.get '/', (req, res) ->
-	res.send 'invalid collection'
+	res.status 503
+	res.send 'invalid request'
 
-app.get '/collections/:collectionName', (req, res, next) ->
+##
+# begin of CRUD services
+##
+#list all collection elements
+app.get '/:collectionName', (req, res, next) ->
 	req.collection.find {}, 
 		limit : 10
 		sort : [['_id', -1]]
 	.toArray (e, results) ->
 		return next e if e
 		res.send results
-app.post '/collections/:collectionName', (req, res, next) ->
+
+#filters a collection elements
+#req.body is the filter
+app.get '/:collectionName', (req, res, next) ->
+	req.collection.find req.body, 
+		limit : 100
+		sort : [['_id', -1]]
+	.toArray (e, results) ->
+		return next e if e
+		res.send results		
+
+#create a collection element
+app.post '/:collectionName', (req, res, next) ->
 	req.collection.insert req.body, (e, results) ->
 		return next e if e
 		res. send results
 
-app.get '/collections/:collectionName/:id', (req, res, next) ->
+#get a collection element by id
+app.get '/:collectionName/:id', (req, res, next) ->
 	req.collection.findById req.params.id, (e, result) ->
 		return next e if e
 		res.send result
 
-app.put '/collections/:collectionName/:id', (req, res, next) ->
+#updates a collection element using id
+app.put '/:collectionName/:id', (req, res, next) ->
 	req.collection.updateById req.params.id, 
 		$set : req.body,
 		(e, result) ->
 			return next e if e
 			res.send( if result is 1 then msg : 'success' else  msg : 'error')
 
-app.del '/collections/:collectionName/:id', (req, res, next) ->
+#removes a collection element by id
+app.del '/:collectionName/:id', (req, res, next) ->
 	req.collection.removeById req.params.id, 
 		(e, result) ->
 			return next e if e
 			res.send( if result is 1 then msg : 'success' else  msg : 'error')
+##
+# end of CRUD services
+##
 
 app.listen 3000
 
