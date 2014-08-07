@@ -16,6 +16,11 @@
 
   app.use(bodyParser());
 
+  app.use(function(req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    return next();
+  });
+
   db = mongoskin.db('mongodb://localhost:27017/stutz_survey_api', {
     safe: true
   });
@@ -38,16 +43,30 @@
     });
   };
 
-  app.get('/opened_survey/:id', function(req, resGet, next) {
-    return superagent.get('http://localhost:3000/survey/' + req.params.id).end(function(e, res) {
+  app.get('/opened_survey/:id', function(req, res, next) {
+    return superagent.get('http://localhost:3000/survey/' + req.params.id).end(function(e, response) {
       var questionIds, survey;
-      survey = res.body;
+      if (response.body.questions == null) {
+        return res.send([]);
+      }
+      survey = response.body;
       questionIds = survey.questions;
       survey.questions = [];
       return getQuestions(questionIds, function(questionsReceived) {
         survey.questions = questionsReceived;
-        return resGet.send(survey);
+        return res.send(survey);
       });
+    });
+  });
+
+  app.post('/opened_survey/answear', function(req, res, next) {
+    var collection;
+    collection = db.collection('survey_answear');
+    return collection.insert(req.body, function(e, results) {
+      if (e) {
+        return next(e);
+      }
+      return res.send(results);
     });
   });
 

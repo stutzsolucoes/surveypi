@@ -7,6 +7,10 @@ async = require 'async'
 app = express()
 app.use bodyParser()
 
+app.use (req, res, next) ->
+	res.setHeader('Access-Control-Allow-Origin','*');
+	next()
+
 #db = mongoskin.db 'mongodb://stutz:Str4igh0Thr0ugh@200.150.207.77:27017/stutz_survey_api',  safe : true 
 db = mongoskin.db 'mongodb://localhost:27017/stutz_survey_api',  safe : true 
 
@@ -25,21 +29,28 @@ getQuestions = (questionIds, questionsRetrieved) ->
 		superagent.get 'http://localhost:3000/survey_question/'+questionId 
 		.end (e, res) ->
 			return callback(e,null) if e isnt null
-			callback(null, res.body)
+			callback(null, res.body) #returns the processed item
 	,
 	(err, results) ->
-		questionsRetrieved(results)
+		questionsRetrieved(results) #this callback is invoked when all the items on the array passed to the map functiona are completed
 
 
-app.get '/opened_survey/:id', (req, resGet, next) ->
+app.get '/opened_survey/:id', (req, res, next) ->
 	superagent.get 'http://localhost:3000/survey/'+req.params.id 
-		.end (e, res) ->
-			survey = res.body
+		.end (e, response) ->
+			return res.send [] if not response.body.questions?
+			survey = response.body
 			questionIds = survey.questions
 			survey.questions = []
 			getQuestions questionIds, (questionsReceived) ->
 				survey.questions = questionsReceived
-				resGet.send(survey)
+				res.send(survey)
+
+app.post '/opened_survey/answear', (req, res, next) ->
+	collection = db.collection 'survey_answear'
+	collection.insert req.body, (e, results) ->
+		return next e if e
+		res. send results
 
  
 ##
