@@ -63,7 +63,7 @@
 <body>
 
 <div ng-controller="HomeController as homeCtrl">
-     <form name="surveyForm" ng-submit="homeCtrl.submitSurvey()">
+     <form name="surveyForm" ng-submit="homeCtrl.submitSurvey()" method="POST">
           <h1>{{homeCtrl.survey.title}}</h1>
           <ul>
                <li ng-repeat="question in homeCtrl.survey.questions">

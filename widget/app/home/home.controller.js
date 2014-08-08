@@ -4,6 +4,7 @@
     '$http', function($http) {
       var home;
       home = this;
+      this.ajaxStatus = 0;
       $http.get(stutzSurveyApp.apiURL + '/opened_survey/53e2ee0d4a83eb980fea5603').success(function(data, status, headers, config) {
         var option, question, _i, _len, _ref, _results;
         home.survey = data;
@@ -32,7 +33,24 @@
         return console.log(status);
       });
       this.submitSurvey = function() {
-        console.log(home.survey);
+        var answear, question, _i, _len, _ref;
+        answear = {};
+        answear.survey_id = home.survey._id;
+        answear.questions = [];
+        _ref = home.survey.questions;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          question = _ref[_i];
+          answear.questions.push({
+            "question_id": question._id,
+            "answear": question.answear
+          });
+        }
+        home.ajaxStatus = 1;
+        $http.post(stutzSurveyApp.apiURL + '/opened_survey/answear', answear).success(function(data, status, headers, config, statusText) {
+          return home.ajaxStatus = 0;
+        }).error(function(data, status, headers, config, statusText) {
+          return home.ajaxStatus = -1;
+        });
       };
     }
   ]);

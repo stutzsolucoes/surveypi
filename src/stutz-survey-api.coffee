@@ -8,7 +8,8 @@ app = express()
 app.use bodyParser()
 
 app.use (req, res, next) ->
-	res.setHeader('Access-Control-Allow-Origin','*');
+	res.setHeader 'Access-Control-Allow-Origin','*';
+	res.setHeader 'Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept'
 	next()
 
 #db = mongoskin.db 'mongodb://stutz:Str4igh0Thr0ugh@200.150.207.77:27017/stutz_survey_api',  safe : true 
