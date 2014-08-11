@@ -5,21 +5,21 @@
       var home;
       home = this;
       this.ajaxStatus = 0;
-      $http.get(stutzSurveyApp.apiURL + '/opened_survey/53e2ee0d4a83eb980fea5603').success(function(data, status, headers, config) {
-        var option, question, _i, _len, _ref, _results;
+      $http.get(stutzSurveyApp.apiURL + '/opened_survey/53e84dee8e332be419f63148').success(function(data, status, headers, config) {
+        var option, surveyQuestion, _i, _len, _ref, _results;
         home.survey = data;
         _ref = home.survey.questions;
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          question = _ref[_i];
-          question.answear = [];
+          surveyQuestion = _ref[_i];
+          surveyQuestion.question.answear = [];
           _results.push((function() {
             var _j, _len1, _ref1, _results1;
-            _ref1 = question.options;
+            _ref1 = surveyQuestion.question.options;
             _results1 = [];
             for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
               option = _ref1[_j];
-              _results1.push(question.answear.push({
+              _results1.push(surveyQuestion.question.answear.push({
                 "option": option,
                 checked: false
               }));
@@ -33,16 +33,16 @@
         return console.log(status);
       });
       this.submitSurvey = function() {
-        var answear, question, _i, _len, _ref;
+        var answear, surveyQuestion, _i, _len, _ref;
         answear = {};
         answear.survey_id = home.survey._id;
         answear.questions = [];
         _ref = home.survey.questions;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          question = _ref[_i];
+          surveyQuestion = _ref[_i];
           answear.questions.push({
-            "question_id": question._id,
-            "answear": question.answear
+            "question_id": surveyQuestion.question._id,
+            "answear": surveyQuestion.question.answear
           });
         }
         home.ajaxStatus = 1;

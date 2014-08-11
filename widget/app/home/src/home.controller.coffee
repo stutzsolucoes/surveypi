@@ -1,12 +1,12 @@
 stutzSurveyApp.controller 'HomeController', ['$http', ($http) ->
 	home = @
 	@ajaxStatus = 0
-	$http.get stutzSurveyApp.apiURL + '/opened_survey/53e2ee0d4a83eb980fea5603'
+	$http.get stutzSurveyApp.apiURL + '/opened_survey/53e84dee8e332be419f63148'
 	.success (data, status, headers, config) ->
 		home.survey = data
-		for question in home.survey.questions 
-			question.answear = []
-			question.answear.push {"option" : option, checked : false} for option in question.options
+		for surveyQuestion in home.survey.questions 
+			surveyQuestion.question.answear = []
+			surveyQuestion.question.answear.push {"option" : option, checked : false} for option in surveyQuestion.question.options
 			
 	.error (data, status, headers, config) ->
 		home.survey = null
@@ -15,7 +15,7 @@ stutzSurveyApp.controller 'HomeController', ['$http', ($http) ->
 		answear = {}
 		answear.survey_id = home.survey._id	
 		answear.questions = []
-		answear.questions.push {"question_id": question._id, "answear" : question.answear} for question in home.survey.questions
+		answear.questions.push {"question_id": surveyQuestion.question._id, "answear" : surveyQuestion.question.answear} for surveyQuestion in home.survey.questions
 		home.ajaxStatus = 1
 		$http.post stutzSurveyApp.apiURL + '/opened_survey/answear',
 			answear

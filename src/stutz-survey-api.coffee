@@ -25,12 +25,12 @@ app.param 'collectionName', (req, res, next, collectionName) ->
 ##
 # begin of Survey API specific services
 ##
-getQuestions = (questionIds, questionsRetrieved) ->
-	async.map questionIds, (questionId, callback) ->
-		superagent.get 'http://localhost:3000/survey_question/'+questionId 
+getQuestions = (questions, questionsRetrieved) ->
+	async.map questions, (question, callback) ->
+		superagent.get 'http://localhost:3000/survey_question/'+question.question_id 
 		.end (e, res) ->
 			return callback(e,null) if e isnt null
-			callback(null, res.body) #returns the processed item
+			callback(null, {"question" : res.body, "order" : question.order}) #returns the processed item
 	,
 	(err, results) ->
 		questionsRetrieved(results) #this callback is invoked when all the items on the array passed to the map functiona are completed

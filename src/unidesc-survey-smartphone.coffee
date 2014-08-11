@@ -67,8 +67,13 @@ describe 'unidesc Smartphone survey', ->
         superagent.get 'http://localhost:3000/survey/' + survey_id
           .end (e, res) ->
             survey = res.body
-            survey.questions = questions_ids
+            survey.questions = []
+            survey.questions.push {"question_id" : question_id, "order" : idx} for question_id, idx in questions_ids
             delete survey._id
+            survey.client_custom_attributes = []
+            survey.client_custom_attributes.push "matricula_id"
+            survey.client_custom_attributes.push "numero_matricula"
+            survey.client_custom_attributes.push "turma_id"
             superagent.put 'http://localhost:3000/survey/' + survey_id
               .send survey
               .end (e,res) ->

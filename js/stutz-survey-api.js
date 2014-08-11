@@ -31,13 +31,16 @@
     return next();
   });
 
-  getQuestions = function(questionIds, questionsRetrieved) {
-    return async.map(questionIds, function(questionId, callback) {
-      return superagent.get('http://localhost:3000/survey_question/' + questionId).end(function(e, res) {
+  getQuestions = function(questions, questionsRetrieved) {
+    return async.map(questions, function(question, callback) {
+      return superagent.get('http://localhost:3000/survey_question/' + question.question_id).end(function(e, res) {
         if (e !== null) {
           return callback(e, null);
         }
-        return callback(null, res.body);
+        return callback(null, {
+          "question": res.body,
+          "order": question.order
+        });
       });
     }, function(err, results) {
       return questionsRetrieved(results);

@@ -52,10 +52,21 @@
         var questions_ids;
         questions_ids = regularEnd(e, res);
         return superagent.get('http://localhost:3000/survey/' + survey_id).end(function(e, res) {
-          var survey;
+          var idx, question_id, survey, _i, _len;
           survey = res.body;
-          survey.questions = questions_ids;
+          survey.questions = [];
+          for (idx = _i = 0, _len = questions_ids.length; _i < _len; idx = ++_i) {
+            question_id = questions_ids[idx];
+            survey.questions.push({
+              "question_id": question_id,
+              "order": idx
+            });
+          }
           delete survey._id;
+          survey.client_custom_attributes = [];
+          survey.client_custom_attributes.push("matricula_id");
+          survey.client_custom_attributes.push("numero_matricula");
+          survey.client_custom_attributes.push("turma_id");
           return superagent.put('http://localhost:3000/survey/' + survey_id).send(survey).end(function(e, res) {
             expect(e).to.eql(null);
             expect(typeof res.body).to.eql('object');

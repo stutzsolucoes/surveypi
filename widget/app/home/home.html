@@ -65,16 +65,17 @@
 <div ng-controller="HomeController as homeCtrl">
      <form name="surveyForm" ng-submit="homeCtrl.submitSurvey()" method="POST">
           <h1>{{homeCtrl.survey.title}}</h1>
+          <input type="hidden" name="{{ custom_attr }}" ng-repeat="custom_attr in homeCtrl.survey.client_custom_attributes">
           <ul>
-               <li ng-repeat="question in homeCtrl.survey.questions">
-                    {{ question.title }}
+               <li ng-repeat="surveyQuestion in homeCtrl.survey.questions">
+                    {{ surveyQuestion.question.title }}
                     <ul>
-                         <li ng-repeat="option in question.options">
+                         <li ng-repeat="option in surveyQuestion.question.options">
                               <label>
                                    <input type="radio" 
-                                        ng-if="$parent.question.type == 1" ng-model="$parent.question.answear" ng-value="option" />
+                                        ng-if="$parent.surveyQuestion.question.type == 1" ng-model="$parent.surveyQuestion.question.answear" ng-value="option" />
                                    <input type="checkbox" 
-                                        ng-if="$parent.question.type == 2" ng-model="$parent.question.answear[$index].checked" />
+                                        ng-if="$parent.surveyQuestion.question.type == 2" ng-model="$parent.surveyQuestion.question.answear[$index].checked" />
                                         {{option}}
                               </label>
                          </li>
