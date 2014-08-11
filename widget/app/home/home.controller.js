@@ -5,6 +5,9 @@
       var home;
       home = this;
       this.ajaxStatus = 0;
+      this.answear = {
+        customAttributes: {}
+      };
       $http.get(stutzSurveyApp.apiURL + '/opened_survey/53e84dee8e332be419f63148').success(function(data, status, headers, config) {
         var option, surveyQuestion, _i, _len, _ref, _results;
         home.survey = data;
@@ -33,20 +36,19 @@
         return console.log(status);
       });
       this.submitSurvey = function() {
-        var answear, surveyQuestion, _i, _len, _ref;
-        answear = {};
-        answear.survey_id = home.survey._id;
-        answear.questions = [];
+        var surveyQuestion, _i, _len, _ref;
+        home.answear.survey_id = home.survey._id;
+        home.answear.questions = [];
         _ref = home.survey.questions;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           surveyQuestion = _ref[_i];
-          answear.questions.push({
+          home.answear.questions.push({
             "question_id": surveyQuestion.question._id,
             "answear": surveyQuestion.question.answear
           });
         }
         home.ajaxStatus = 1;
-        $http.post(stutzSurveyApp.apiURL + '/opened_survey/answear', answear).success(function(data, status, headers, config, statusText) {
+        $http.post(stutzSurveyApp.apiURL + '/opened_survey/answear', home.answear).success(function(data, status, headers, config, statusText) {
           return home.ajaxStatus = 0;
         }).error(function(data, status, headers, config, statusText) {
           return home.ajaxStatus = -1;

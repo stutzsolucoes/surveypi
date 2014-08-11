@@ -65,7 +65,8 @@
 <div ng-controller="HomeController as homeCtrl">
      <form name="surveyForm" ng-submit="homeCtrl.submitSurvey()" method="POST">
           <h1>{{homeCtrl.survey.title}}</h1>
-          <input type="hidden" name="{{ custom_attr }}" ng-repeat="custom_attr in homeCtrl.survey.client_custom_attributes">
+          <input type="hidden" ng-model="homeCtrl.answear.customAttributes.numero_matricula" ng-init="homeCtrl.answear.customAttributes.numero_matricula = '1122'">
+          <input type="hidden" ng-model="homeCtrl.answear.customAttributes.turma_id" ng-init="homeCtrl.answear.customAttributes.turma_id = 151102">
           <ul>
                <li ng-repeat="surveyQuestion in homeCtrl.survey.questions">
                     {{ surveyQuestion.question.title }}
